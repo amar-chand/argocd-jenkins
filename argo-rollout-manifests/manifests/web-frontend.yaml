@@ -1,0 +1,19 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: web-frontend-app-canary-rollout
+  namespace: argocd
+spec:
+  source:
+    repoURL: https://github.com/amar-chand/argocd-jenkins.git
+    targetRevision: argo-rollouts
+    path: argo-rollout-manifests/web-frontend/
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  project: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      

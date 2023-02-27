@@ -1,0 +1,32 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: customers-app-canary-rollout
+  namespace: default
+spec:
+  replicas: 4
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: customers-app-canary
+  template:
+    metadata:
+      labels:
+        app: customers-app-canary
+    spec:
+      containers:
+        - name: customers
+          image: amarchanddargad/argo-customer-images
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+  strategy:
+    canary:
+      steps:
+        - setWeight: 25
+        - pause:
+            duration: 20s
+        - setWeight: 50
+        - pause:
+            duration: 20s
+        - setWeight: 75

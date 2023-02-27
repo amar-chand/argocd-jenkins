@@ -1,0 +1,36 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: web-frontend-app-canary-rollout
+  namespace: argo-rollouts
+spec:
+  replicas: 4
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: web-frontend-app-canary
+  template:
+    metadata:
+      labels:
+        app: web-frontend-app-canary
+    spec:
+      containers:
+        - name: web-frontend
+          image: amarchanddargad/argo-web-frontend-images
+          imagePullPolicy: Always
+          env:
+            - name: CUSTOMER_SERVICE_URL
+              value: http://customers-app-canary.default.svc
+          ports:
+            - containerPort: 80
+              name: web-frontend
+  strategy:
+    canary:
+      steps:
+        - setWeight: 25
+        - pause:
+            duration: 20s
+        - setWeight: 50
+        - pause:
+            duration: 20s
+        - setWeight: 75
