@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: web-frontend
-          image: amarchanddargad/argo-web-frontend-images
+          image: amarchanddargad/argo-web-frontend-images:web-frontend-97993f57fd02ba99fa727e450239684e511cd8fe
           imagePullPolicy: Always
           env:
             - name: CUSTOMER_SERVICE_URL
