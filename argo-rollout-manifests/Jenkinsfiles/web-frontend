@@ -1,0 +1,34 @@
+pipeline {
+    agent any
+    environment {
+      github = credentials('github')
+      dockerhub = credentials('dockerhub')
+    }
+     stages {
+        stage('build') {
+           steps {
+               sh '''
+                 until docker container ls ; do sleep 3 ;done && docker build -t ${dockerhub_USR}/argo-web-frontend-images:web-frontend-${GIT_COMMIT} ./web-frontend/
+                 docker login -u ${dockerhub_USR} -p ${dockerhub_PSW} && docker push ${dockerhub_USR}/argo-web-frontend-images:web-frontend-${GIT_COMMIT}
+                 '''
+           }
+        }
+       stage('deploy') {
+           steps {
+               sh '''
+                     git config --global user.email "chanddargad@gmail.com"
+                     git config --global user.name "Amar Chand"
+                     git checkout argo-rollouts
+                     git pull origin argo-rollouts
+                     export image_tag="${dockerhub_USR}/argo-web-frontend-images:web-frontend-${GIT_COMMIT}" 
+                     yq eval '.spec.template.spec.containers[0].image = env(image_tag)' -i ./argo-rollout-manifests/web-frontend/rollout.yaml
+                     git add . 
+                     git commit -m "Updated image tag for web-frontend" 
+                     git push https://${github_USR}:${github_PSW}@github.com/amar-chand/argocd-jenkins.git
+                  '''
+             
+           }
+       }
+
+     }
+}
