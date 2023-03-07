@@ -18,7 +18,7 @@ spec:
         app: customers
     spec:
       containers:
-        - image: amarchanddargad/argo-customer-images:customers-8cc7c539cedcf8299cb6099c5d4c0aee17c34f59
+        - image: amarchanddargad/argo-customer-images:customers-97993f57fd02ba99fa727e450239684e511cd8fe
           name: argo-customer-images
           ports:
             - containerPort: 3000
